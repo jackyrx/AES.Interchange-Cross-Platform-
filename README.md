@@ -1,9 +1,9 @@
 # AES.Interchange
 
 These contains example codes on
-- PHP
-- Ruby
-- Swift
+- PHP (openssl_encrypt/openssl_decrypt)
+- Ruby (openssl)
+- Swift (CryptoSwift)
 
 Thanks to 
 
