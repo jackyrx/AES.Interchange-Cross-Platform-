@@ -9,13 +9,13 @@
 
 	echo "iv: " . base64_encode($iv) . "<br />";
 
-	// $encrypted = openssl_encrypt($data, 'aes256', $key, false, $iv);
+	// $encrypted = openssl_encrypt($data, 'aes-256-cbc', $key, false, $iv);
 
 	$encrypted = "Jb42THYPRX726u5rvIKtfQ==";
 
 	echo "encrypted: " . $encrypted . "<br />";
 
-	$decrypted = openssl_decrypt($encrypted, 'aes256', $key, false, $iv);
+	$decrypted = openssl_decrypt($encrypted, 'aes-256-cbc', $key, false, $iv);
 
 	echo "decrypted: " . $decrypted . "<br />";
 
