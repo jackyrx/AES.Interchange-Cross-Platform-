@@ -29,7 +29,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         do {
             
-            let aes = try AES(key: byteKey, iv: iv, blockMode: .CBC)
+            let aes = try AES(key: byteKey, iv: iv, blockMode: .CBC, padding: PKCS7())
+            
             var encrypted = try aes.encrypt(byteText)
             
             let strIV = NSData(bytes:iv).base64EncodedStringWithOptions(.Encoding64CharacterLineLength)
@@ -45,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 
                 encrypted = NSData(base64EncodedString: "oktI4NxPlpZeYVRqDoLPPQ==", options: NSDataBase64DecodingOptions())!.arrayOfBytes()
                 
-                let aes = try AES(key: byteKey, iv: iv, blockMode: .CBC)
+                let aes = try AES(key: byteKey, iv: iv, blockMode: .CBC, padding: PKCS7())
                 let decrypted = try aes.decrypt(encrypted)
             
                 if let strDec = String(bytes: decrypted, encoding: NSUTF8StringEncoding) {
