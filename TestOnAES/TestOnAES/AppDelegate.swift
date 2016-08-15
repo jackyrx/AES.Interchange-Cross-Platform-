@@ -9,6 +9,22 @@
 import UIKit
 import CryptoSwift
 
+extension String {
+//    Ref: http://stackoverflow.com/questions/26501276/converting-hex-string-to-nsdata-in-swift
+    func dataWithHexString() -> NSData {
+        var hex = self
+        let data = NSMutableData()
+        while(hex.characters.count > 0) {
+            let c: String = hex.substringToIndex(hex.startIndex.advancedBy(2))
+            hex = hex.substringFromIndex(hex.startIndex.advancedBy(2))
+            var ch: UInt32 = 0
+            NSScanner(string: c).scanHexInt(&ch)
+            data.appendBytes(&ch, length: 1)
+        }
+        return data
+    }
+}
+
 @UIApplicationMain
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -39,12 +55,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let strEnc = NSData(bytes:encrypted).base64EncodedStringWithOptions(.Encoding64CharacterLineLength)
             print("encrypted: " + strEnc)
             
+            print("=====================================================")
+            
             do {
                 
-//                let key = "57119C07F45756AF6E81E662BE2CCE62"
-                let iv = NSData(base64EncodedString: "faMbpBYB8a9v+zcIWXuE8w==", options: NSDataBase64DecodingOptions())!.arrayOfBytes()
+                let key = "57119C07F45756AF6E81E662BE2CCE62"
+                let byteKey = key.dataUsingEncoding(NSUTF8StringEncoding)!.arrayOfBytes()
                 
-                encrypted = NSData(base64EncodedString: "oktI4NxPlpZeYVRqDoLPPQ==", options: NSDataBase64DecodingOptions())!.arrayOfBytes()
+                let raw_iv_data = "b35cf5ec81bdf0f875e0bef34eaa116e".dataWithHexString()
+                let hex_iv = raw_iv_data.toHexString()
+                
+                let base64_iv = raw_iv_data.arrayOfBytes().toBase64()!
+//                let base64_iv = "s1z17IG98Ph14L7zTqoRbg=="
+                
+                print("base64_iv: \(base64_iv)")
+                
+                let iv = NSData(base64EncodedString: base64_iv, options: NSDataBase64DecodingOptions())!.arrayOfBytes()
+                
+                let raw_encrypted = "25be364c760f457ef6eaee6bbc82ad7d".dataWithHexString()
+                let hex_encrypted = raw_encrypted.toHexString()
+                
+                let base64_encrypted = raw_encrypted.arrayOfBytes().toBase64()!
+//                let base64_encrypted = "Jb42THYPRX726u5rvIKtfQ=="
+                
+                print("base64_encrypted: \(base64_encrypted)")
+                
+//                let tmp_iv = NSData(base64EncodedString: "s1z17IG98Ph14L7zTqoRbg==", options: NSDataBase64DecodingOptions())!.arrayOfBytes().toHexString()
+//                print("tmp_iv: \(tmp_iv)")
+//                
+//                let tmp_encrypted = NSData(base64EncodedString: "Jb42THYPRX726u5rvIKtfQ==", options: NSDataBase64DecodingOptions())!.arrayOfBytes().toHexString()
+//                print("tmp_encrypted: \(tmp_encrypted)")
+                
+                encrypted = NSData(base64EncodedString: base64_encrypted, options: NSDataBase64DecodingOptions())!.arrayOfBytes()
                 
                 let aes = try AES(key: byteKey, iv: iv, blockMode: .CBC, padding: PKCS7())
                 let decrypted = try aes.decrypt(encrypted)
