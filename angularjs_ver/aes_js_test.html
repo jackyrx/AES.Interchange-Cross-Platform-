@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="aes">
+	<head>
+		<title>AES Test</title>
+		<meta charset="utf-8" />
+
+		<script src="bower_components/crypto-js/crypto-js.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+
+		<script>
+			// Ref: https://scotch.io/tutorials/how-to-encode-and-decode-strings-with-base64-in-javascript
+			var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9+/=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/rn/g,"n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
+
+			var	app = angular.module("aes", []);
+
+			app.controller("mainCtrl", function($scope) {
+				$scope.data = "Hello World";
+				$scope.key = "57119C07F45756AF6E81E662BE2CCE62";
+				$scope.iv = "Qt+lwqgCBxm7pbwMLmXWsg==";
+
+				var config = {
+					// algorithm: CryptoJS.AES,
+					mode: CryptoJS.mode.CBC,
+					pad: CryptoJS.pad.ZeroPadding,
+					// pad: CryptoJS.pad.ZeroPadding,
+				};
+
+				$scope.act = function() {
+
+					var data = "Hello World XY";
+					var key = "57119C07F45756AF6E81E662BE2CCE62";
+					var iv = "DOwP3jOJULFwu3H259bdWQ==";
+
+					var encryptedData = CryptoJS.AES.encrypt(data, 
+						CryptoJS.enc.Utf8.parse(key), {
+							mode: CryptoJS.mode.CBC,
+							padding: CryptoJS.pad.Pkcs7,
+							iv: CryptoJS.enc.Base64.parse(iv) 
+						}
+					);
+
+					console.log("encryptedData: " + encryptedData);
+
+					// var crypttext = encryptedData.toString();
+					var crypttext = "4odRDXsfQhLgCC++NQoKRw==";
+
+					var decryptedData = CryptoJS.AES.decrypt({
+						ciphertext: CryptoJS.enc.Base64.parse(crypttext) 
+					}, CryptoJS.enc.Utf8.parse(key), {
+						mode: CryptoJS.mode.CBC,
+						padding: CryptoJS.pad.Pkcs7,
+						iv: CryptoJS.enc.Base64.parse(iv) 
+					});
+
+					console.log("decryptedData: " + decryptedData.toString(CryptoJS.enc.Utf8));
+
+					console.log("=================================================");
+
+					var encrypted = encryptedData;
+
+					var flag_debug = true;
+
+					if (flag_debug) {
+						var ivHex = encrypted.iv.toString();
+						var ivSize = encrypted.algorithm.ivSize; // same as the blockSize
+						var keySize = encrypted.algorithm.keySize;
+						var keyHex = encrypted.key.toString();
+						// var saltHex = encrypted.salt.toString(); // must be sent as well
+						var openSslFormattedCipherTextString = encrypted.toString(); // not used
+						var cipherTextHex = encrypted.ciphertext.toString(); // must be sent
+
+						console.log("ivHex: " + ivHex);
+						console.log("ivSize: " + ivSize);
+						console.log("keySize: " + keySize);
+						console.log("keyHex: " + keyHex);
+						// console.log("saltHex: " + saltHex);
+						console.log("openSslFormattedCipherTextString: " + openSslFormattedCipherTextString);
+						console.log("cipherTextHex: " + cipherTextHex);
+					}
+
+					console.log("=================================================");
+				};
+				
+				$scope.act();
+			});
+		</script>
+	</head>
+	<body ng-controller="mainCtrl">
+		<h3>AES Test</h3>
+		<pre>** Just a example that demostrate the usage of AES on different languages/ platforms **</pre>
+
+		<hr />
+	</body>
+</html>
