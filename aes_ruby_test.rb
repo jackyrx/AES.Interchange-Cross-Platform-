@@ -20,8 +20,6 @@ def aes_decrypt(key, iv, encrypted)
 	decipher.key = key
 	decipher.iv = iv
 
-# ...
-
 	decrypted = ""
 	decrypted << decipher.update(encrypted)
 	decrypted << decipher.final
